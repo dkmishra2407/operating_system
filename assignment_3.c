@@ -19,8 +19,8 @@ int find_earliest_arrival(int arr[][3], int n) {
 
 // Function to sort processes by burst time
 void sort_by_burst_time(int arr[][3], int n) {
-    for (int i = 1; i < n - 1; i++) {
-        for (int j = 1; j < n - i; j++) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
             if (arr[j][2] > arr[j + 1][2]) {
                 for (int k = 0; k < 3; k++) {
                     swap(&arr[j][k], &arr[j + 1][k]);
@@ -30,7 +30,7 @@ void sort_by_burst_time(int arr[][3], int n) {
     }
 }
 
-void completion_time(int arr[][3], int n){
+void completion_time(int arr[][3], int n) {
     int completion[n];
     completion[0] = arr[0][1] + arr[0][2]; 
     for (int i = 1; i < n; i++) {
@@ -66,30 +66,22 @@ void sjf_non_preemptive(int arr[][3], int n) {
     float avg_time = 0;
     waiting_time[0] = 0; 
     
-    printf("Non Premitive Waiting Time: ");
-    printf("\n");
-    printf("%d",waiting_time[0]);
-    printf("\n");
+    printf("Non-Preemptive Waiting Time: \n");
+    printf("%d\n", waiting_time[0]);
     
     for (int i = 1; i < n; i++) {
         waiting_time[i] = waiting_time[i - 1] + arr[i - 1][2];
         total_waiting_time += waiting_time[i];
-        printf("%d",waiting_time[i]);
-        printf("\n");
+        printf("%d\n", waiting_time[i]);
     }
     
-    avg_time = total_waiting_time/n;
-    printf("avarage waiting time is ");
-    printf("\n");
-    printf("%f",avg_time);
-    printf("\n");
-    printf("Non-premitive Completion Time : ");
-    printf("\n");
-    completion_time(arr,n);
+    avg_time = (float)total_waiting_time / n;
+    printf("Average Waiting Time: %f\n", avg_time);
+    printf("Non-Preemptive Completion Time:\n");
+    completion_time(arr, n);
 }
 
-void sjf_preemptive(int arr[][3], int n){
-
+void sjf_preemptive(int arr[][3], int n) {
     // Sorting processes based on arrival time
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
@@ -103,38 +95,24 @@ void sjf_preemptive(int arr[][3], int n){
 
     int remaining[n];
     int waiting_time[n];
-    for(int i=0;i<n;i++){
-        waiting_time[i] = 0;
-    }
-    int completion_time[n];
-    int process_id[n];
     for (int i = 0; i < n; i++) {
-        remaining[i] = arr[i][2];
-        process_id[i] = arr[i][0];
+        remaining[i] = arr[i][2]; // Initialize remaining times
+        waiting_time[i] = 0; // Initialize waiting times
     }
-
+    
     int t = 0;  // Current time
     int count = 0;  // Number of processes completed
-    int min_index;
-    int min_remaining;
-
-    // Initialize the completion time array
-    for (int i = 0; i < n; i++) {
-        completion_time[i] = 0;
-    }
+    int completion_time[n]; // To store completion times
 
     while (count < n) {
-        min_remaining = 1000000;
-        min_index = -1;
+        int min_remaining = 1000000;
+        int min_index = -1;
 
         // Find the process with the shortest remaining time that has arrived
         for (int i = 0; i < n; i++) {
-            if (arr[i][1] <= t && remaining[i] < min_remaining && remaining[i] > 0) {  
+            if (arr[i][1] <= t && remaining[i] > 0 && remaining[i] < min_remaining) {
                 min_remaining = remaining[i];
                 min_index = i;
-                if(waiting_time[i]==0){
-                    waiting_time[i] = t;
-                }
             }
         }
 
@@ -146,23 +124,83 @@ void sjf_preemptive(int arr[][3], int n){
 
         // Execute the process with the shortest remaining time
         remaining[min_index]--;
+        
+        // If the process is completed
         if (remaining[min_index] == 0) {
-            // Process has finished
             count++;
-            completion_time[min_index] = t + 1;  // +1 because we started at time t
+            completion_time[min_index] = t + 1;  // Completion time
+            waiting_time[min_index] = completion_time[min_index] - arr[min_index][1] - arr[min_index][2];
         }
-        t++;
+        t++; // Increment time
     }
 
-    printf("Process ID\t waiting Time\n");
+    // Output results
+    printf("Process ID\tWaiting Time\n");
     for (int i = 0; i < n; i++) {
         printf("%d\t\t%d\n", arr[i][0], waiting_time[i]);
     }
     
-    printf("\n");
-    printf("\n");
-    
-    printf("Process ID\tCompletion Time\n");
+    printf("\nProcess ID\tCompletion Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\n", arr[i][0], completion_time[i]);
+    }
+}
+
+void round_robin(int arr[][3], int n) {
+    // Sorting processes based on arrival time
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j][1] > arr[j + 1][1]) {
+                for (int k = 0; k < 3; k++) {
+                    swap(&arr[j][k], &arr[j + 1][k]);
+                }
+            }
+        }
+    }
+
+    int remaining[n];
+    int waiting_time[n];
+    for (int i = 0; i < n; i++) {
+        waiting_time[i] = 0;
+        remaining[i] = arr[i][2];
+    }
+
+    int t = 0;  // Current time
+    int count = 0;  // Number of processes completed
+    int completion_time[n];
+
+    int tq;
+    printf("Enter The Time Quantum: ");
+    scanf("%d", &tq);
+
+    while (count < n) {
+        int found = 0; // Flag to check if a process is found
+        for (int i = 0; i < n; i++) {
+            if (arr[i][1] <= t && remaining[i] > 0) {
+                found = 1; // Process found
+                if (remaining[i] > tq) {
+                    t += tq;
+                    remaining[i] -= tq;
+                } else {
+                    t += remaining[i];
+                    completion_time[i] = t;
+                    waiting_time[i] = t - arr[i][1] - arr[i][2];
+                    remaining[i] = 0;
+                    count++;
+                }
+            }
+        }
+        if (!found) {
+            t++; // Increment time if no process is found
+        }
+    }
+
+    printf("Process ID\tWaiting Time\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t\t%d\n", arr[i][0], waiting_time[i]);
+    }
+
+    printf("\nProcess ID\tCompletion Time\n");
     for (int i = 0; i < n; i++) {
         printf("%d\t\t%d\n", arr[i][0], completion_time[i]);
     }
@@ -176,7 +214,6 @@ void print(int arr[][3], int n) {
         printf("\n");
     }
 }
-
 
 int main() {
     int n;
@@ -193,18 +230,14 @@ int main() {
     }
 
     print(arr, n);
-    
-    printf("************* sjf_non_preemptive ************");
-    printf("\n");
-    printf("\n");
+    printf("************* SJF Non-Preemptive ************\n");
     sjf_non_preemptive(arr, n);
-    printf("\n");
-    printf("\n");
     
-    printf("*************** sjf_preemptive  ************** ");
-    printf("\n");
-    printf("\n");
+    printf("\n*************** SJF Preemptive **************\n");
     sjf_preemptive(arr, n);
+    
+    printf("\n*************** Round Robin **************\n");
+    round_robin(arr, n);
     
     return 0;
 }
