@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/wait.h>
 
 void merge(int arr[], int l, int mid, int h) //Function to merge divided array
 {
