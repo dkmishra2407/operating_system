@@ -31,11 +31,9 @@ void SSTF(vector<int> requests, int head) {
                 }
             }
         }
-
-        // Mark the selected request as visited
         visited[index] = true;
         total_head_movement += min_distance;
-        head = requests[index]; // Move head to the selected request
+        head = requests[index];
         count++;
     }
 
@@ -60,7 +58,6 @@ void SCAN(vector<int> requests, int head, string direction) {
             total_head_movement += abs(head - request);
             head = request;
         }
-        // Move to the end of the disk
         total_head_movement += abs(head - 199); // Assuming disk size is 200
         head = 0; // Move to start
         for (int request : left) {
@@ -118,8 +115,7 @@ void CLOOK(vector<int> requests, int head) {
 
 int main() {
     vector<int> sstf_requests = {98, 183, 41, 122, 14, 124, 65, 67};
-    int sstf_head = 53; // Initial head position for SSTF
-
+    int sstf_head = 53;
     vector<int> scan_requests = {176, 79, 34, 60, 92, 11, 41, 114};
     int scan_head = 50; // Initial head position for SCAN
     string scan_direction = "right"; // or "left"
