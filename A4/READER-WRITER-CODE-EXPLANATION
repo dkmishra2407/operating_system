@@ -1,0 +1,154 @@
+Certainly! The code you provided is a classic example of the **Readers-Writers problem**, a common synchronization problem that involves coordinating access to a shared resource by multiple readers and writers. Let's break down each component of the code to understand its functionality in detail.
+
+### Code Breakdown
+
+#### 1. **Header Files and Constants**
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+#define NO_OF_READERS 3
+#define NO_OF_WRITERS 3
+```
+
+- **`#include <stdio.h>`**: Includes the Standard Input Output library for functions like `printf()`.
+- **`#include <stdlib.h>`**: Includes the Standard Library for functions like `malloc()`, `free()`, etc.
+- **`#include <pthread.h>`**: Includes the POSIX Threads library for multithreading functions.
+- **`#include <semaphore.h>`**: Includes the POSIX Semaphore library for semaphore operations.
+- **`#define NO_OF_READERS 3`** and **`#define NO_OF_WRITERS 3`**: Defines constants for the number of reader and writer threads.
+
+#### 2. **Global Variables**
+
+```c
+sem_t wsem;  
+pthread_mutex_t mutex;
+
+int readcount = 0;  
+int x = 0;
+```
+
+- **`sem_t wsem`**: A semaphore used to control access to the shared resource by writers. It acts as a binary semaphore (mutex).
+- **`pthread_mutex_t mutex`**: A mutex used to protect the `readcount` variable and coordinate access to it.
+- **`int readcount = 0`**: Keeps track of the number of active readers.
+- **`int x = 0`**: The shared resource that readers and writers will access.
+
+#### 3. **Reader Thread Function**
+
+```c
+void* reader(void* arg) {
+    int id = *((int*)arg);
+
+    printf("Reader %d: Waiting to read\n", id);
+    pthread_mutex_lock(&mutex);
+    readcount++;
+    if (readcount == 1) {
+        sem_wait(&wsem);  // First reader blocks writers
+    }
+    pthread_mutex_unlock(&mutex);
+
+    // Reading section
+    printf("Reader %d: Reading x = %d\n", id, x);
+
+    pthread_mutex_lock(&mutex);
+    readcount--;
+    if (readcount == 0) {
+        sem_post(&wsem);  // Last reader allows writers
+    }
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+}
+```
+
+- **`int id = *((int*)arg);`**: Retrieves the reader's ID from the argument passed to the thread.
+- **`printf("Reader %d: Waiting to read\n", id);`**: Outputs a message indicating the reader is waiting to read.
+- **`pthread_mutex_lock(&mutex);`** and **`pthread_mutex_unlock(&mutex);`**: Locks and unlocks the mutex to safely update `readcount`.
+- **`readcount++`**: Increments the count of active readers.
+- **`if (readcount == 1) { sem_wait(&wsem); }`**: If this is the first reader, it blocks writers by waiting on the semaphore.
+- **`printf("Reader %d: Reading x = %d\n", id, x);`**: Outputs the value of `x` being read.
+- **`readcount--`**: Decrements the count of active readers.
+- **`if (readcount == 0) { sem_post(&wsem); }`**: If this is the last reader, it allows writers to proceed by posting on the semaphore.
+
+#### 4. **Writer Thread Function**
+
+```c
+void* writer(void* arg) {
+    int id = *((int*)arg);
+
+    printf("Writer %d: Waiting to write\n", id);
+    sem_wait(&wsem);  // Wait for access to write
+
+    // Writing section
+    x++;  // Example operation
+    printf("Writer %d: Writing x = %d\n", id, x);
+
+    sem_post(&wsem);  
+    return NULL;
+}
+```
+
+- **`int id = *((int*)arg);`**: Retrieves the writer's ID from the argument passed to the thread.
+- **`printf("Writer %d: Waiting to write\n", id);`**: Outputs a message indicating the writer is waiting to write.
+- **`sem_wait(&wsem);`**: Waits (or blocks) until it can gain exclusive access to the shared resource.
+- **`x++;`**: Example of a write operation; increments the shared variable `x`.
+- **`printf("Writer %d: Writing x = %d\n", id, x);`**: Outputs the new value of `x` after writing.
+- **`sem_post(&wsem);`**: Releases the semaphore, allowing other writers or readers to access the resource.
+
+#### 5. **Main Function**
+
+```c
+int main() {
+    pthread_t readers[NO_OF_READERS], writers[NO_OF_WRITERS];
+    int reader_id[NO_OF_READERS], writer_id[NO_OF_WRITERS];
+
+    // Initialize semaphore and mutex
+    sem_init(&wsem, 0, 1);  // Binary semaphore for writer control
+    pthread_mutex_init(&mutex, NULL);
+
+    // Create reader threads
+    for (int i = 0; i < NO_OF_READERS; i++) {
+        reader_id[i] = i + 1;
+        pthread_create(&readers[i], NULL, reader, &reader_id[i]);
+    }
+
+    // Create writer threads
+    for (int i = 0; i < NO_OF_WRITERS; i++) {
+        writer_id[i] = i + 1;
+        pthread_create(&writers[i], NULL, writer, &writer_id[i]);
+    }
+
+    // Wait for all threads to complete
+    for (int i = 0; i < NO_OF_READERS; i++) {
+        pthread_join(readers[i], NULL);
+    }
+
+    for (int i = 0; i < NO_OF_WRITERS; i++) {
+        pthread_join(writers[i], NULL);
+    }
+
+    // Destroy semaphore and mutex
+    sem_destroy(&wsem);
+    pthread_mutex_destroy(&mutex);
+
+    return 0;
+}
+```
+
+- **`pthread_t readers[NO_OF_READERS], writers[NO_OF_WRITERS];`**: Arrays to hold thread identifiers for readers and writers.
+- **`int reader_id[NO_OF_READERS], writer_id[NO_OF_WRITERS];`**: Arrays to store unique IDs for each reader and writer.
+- **`sem_init(&wsem, 0, 1);`**: Initializes the semaphore `wsem` with an initial value of 1. This acts as a binary semaphore.
+- **`pthread_mutex_init(&mutex, NULL);`**: Initializes the mutex `mutex`.
+- **`pthread_create(&readers[i], NULL, reader, &reader_id[i]);`**: Creates reader threads.
+- **`pthread_create(&writers[i], NULL, writer, &writer_id[i]);`**: Creates writer threads.
+- **`pthread_join(readers[i], NULL);`** and **`pthread_join(writers[i], NULL);`**: Waits for all reader and writer threads to finish.
+- **`sem_destroy(&wsem);`** and **`pthread_mutex_destroy(&mutex);`**: Cleans up the semaphore and mutex.
+
+### Summary
+
+- **Readers** can read the shared variable `x` concurrently but need to block writers when any reader is active.
+- **Writers** have exclusive access to `x` and must wait if any reader is currently reading.
+- **Semaphores** and **mutexes** are used to coordinate access to the shared resource and to manage the reader count properly.
+
+This implementation ensures that writers are blocked if any readers are active and readers are blocked if a writer is active, effectively managing concurrent access to the shared resource `x`.
