@@ -1,10 +1,10 @@
-#include <sys/types.h> //Importing required libraries
+#include <sys/types.h> 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 
-void merge(int arr[], int l, int mid, int h) //Function to merge divided array
+void merge(int arr[], int l, int mid, int h) 
 {
 	int temp[h-l+1];
 	int i = l;
