@@ -43,20 +43,16 @@ public:
                 if (frame[i] == page) {
                     found = true;
                     lastUsed[page] = time; // Update last used time
-                    break;
+                    break;    
                 }
             }
             if (!found) {
                 // Find the least recently used page to replace
-                int lruIndex = -1, lruTime = INT_MAX;
+                int lruIndex = -1,lruTime = INT_MAX;
                 for (int i = 0; i < frames; i++) {
                     if (frame[i] == -1) {
                         lruIndex = i;
                         break;
-                    }
-                    if (lastUsed[frame[i]] < lruTime) {
-                        lruTime = lastUsed[frame[i]];
-                        lruIndex = i;
                     }
                 }
                 frame[lruIndex] = page;

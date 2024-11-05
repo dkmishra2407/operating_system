@@ -10,7 +10,7 @@ int main()
     // pipeFDs[2] creates an array to hold two file descriptors: 
     // pipeFDs[0] for reading from the pipe 
     // pipeFDs[1] for writing to the pipe.
-    char buf;   // BUFFER 
+    char buf;   // BUFFER  
     char* msg = "Message\n";   // MESSAGE TO PRINT
     if(pipe(pipeFDs) < 0) {perror("pipeFDs"); exit(-1);}  // CHECK THE PIPES ARE CREATED CORRECTLY OR NOT 
 
