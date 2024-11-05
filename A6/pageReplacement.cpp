@@ -33,7 +33,7 @@ public:
     void lru(int frames, const vector<int>& pages) {
         cout << "LRU Page Replacement:\n";
         vector<int> frame(frames, -1);
-        unordered_map<int, int> lastUsed;  // Store last used time for pages
+        unordered_map<int, int> lastUsed;  
         int pageFaults = 0;
         int time = 0;
 

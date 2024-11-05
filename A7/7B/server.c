@@ -12,14 +12,12 @@ int main() {
     key_t key = ftok("shmfile", 65); // Generate a unique key
     char *str;
 
-    // Create shared memory segment
     shmid = shmget(key, SHM_SIZE, 0666 | IPC_CREAT);
     if (shmid == -1) {
         perror("shmget failed");
         exit(1);
     }
 
-    // Attach to the shared memory segment
     str = (char*) shmat(shmid, NULL, 0);
     if (str == (char*)(-1)) {
         perror("shmat failed");

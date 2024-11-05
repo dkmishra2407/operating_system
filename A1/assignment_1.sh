@@ -85,6 +85,7 @@ deleteRecordAddressHotel(){
         echo "Record Not Found"
     else
         sed -i "/$name/d" address_hotel.txt
+        # sed -i "/$name/d" address_hotel.txt is used to delete lines that match a specific pattern in the address_hotel.txt file
     fi
 }
  
@@ -97,9 +98,14 @@ searchRecordAddressHotel(){
  
     read -p "Enter Name: " name
     if [ -z "$(grep -i $name address_hotel.txt)" ]; then
+    # -z: This is a test operator that checks if the string inside the parentheses is empty.
+    # -i option makes the search case-insensitive, so it doesn't matter whether the name is 
+    # written in uppercase, lowercase, or a mix of both.
+
         echo "Record Not Found"
     else
-        grep -i $name address_hotel.txt
+        grep -i $name address_hotel.txt 
+        # this part will contain the matching lines; otherwise, it will be empty.
     fi
 }
  
@@ -127,7 +133,8 @@ updateRecordAddressHotel(){
 # Main function to display the menu and handle user input
 main(){
     while true; do
-        echo -e "\nWelcome to Address Hotel\n"
+        echo -e "\nWelcome to Address Hotel\n"  
+        # -e option in the echo command is used to enable the interpretation of backslash escapes.
         echo "1. Create Address Hotel"
         echo "2. View Address Hotel"
         echo "3. Insert Record"
