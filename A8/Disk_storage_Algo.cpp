@@ -47,10 +47,9 @@ void scan(vector<int>& requests, int head, string direction) {
             left.push_back(req);
         }
     }
-
-    sort(left.begin(), left.end());
-    sort(right.begin(), right.end());
-
+    
+        sort(left.begin(), left.end(),greater<int>());
+        sort(right.begin(), right.end());
     // Process requests based on scan direction
     if (direction == "right") {
         // Move to the right first
@@ -61,7 +60,7 @@ void scan(vector<int>& requests, int head, string direction) {
 
         // Move to the end of the disk and back to the start
         total_movement += abs(head - DISK_SIZE);
-        head = 0;
+        head = DISK_SIZE;
 
         for (int req : left) {
             total_movement += abs(head - req);
@@ -77,7 +76,7 @@ void scan(vector<int>& requests, int head, string direction) {
 
         // Move to the start of the disk and back to the end
         total_movement += abs(head - 0);
-        head = DISK_SIZE;
+        head = 0;
 
         for (int req : right) {
             total_movement += abs(head - req);
@@ -103,7 +102,7 @@ void clook(vector<int>& requests, int head) {
     }
 
     // Sort requests in both directions for C-LOOK movement
-    sort(left.begin(), left.end(), greater<int>());
+    sort(left.begin(), left.end());
     sort(right.begin(), right.end());
 
     // Process requests on the right side
@@ -113,8 +112,9 @@ void clook(vector<int>& requests, int head) {
     }
 
     // Jump back to the lowest request on the left side if needed
+    total_movement += abs(left[0] - head);
+    head = left[0];
     if (!left.empty()) {
-        head = left.front();
         for (int request : left) {
             total_movement += abs(head - request);
             head = request;

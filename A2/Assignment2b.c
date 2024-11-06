@@ -66,7 +66,7 @@ int main()
 	for(int i=0;i<5;i++) //Take five integers as input
 	{
 		printf("Enter Integer %d : ",i+1);
-		scanf("%d", &x);
+		scanf("%d", &x); 
 		arr[i] = x;
 	}
 	
