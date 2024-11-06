@@ -54,6 +54,10 @@ public:
                         lruIndex = i;
                         break;
                     }
+                    if (lruTime < lastUsed[frame[i]]) {
+                                lruTime  = lastUsed[frame[i]];
+                                lruIndex = i;
+                    }
                 }
                 frame[lruIndex] = page;
                 lastUsed[page] = time;

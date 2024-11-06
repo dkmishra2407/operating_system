@@ -59,18 +59,18 @@ int main() {
     // Initialize semaphore and mutex
     sem_init(&wsem, 0, 1);  // Binary semaphore for writer control
     pthread_mutex_init(&mutex, NULL);
-
+    // Create writer threads
+    for (int i = 0; i < NO_OF_WRITERS; i++) {
+        writer_id[i] = i + 1;
+        pthread_create(&writers[i], NULL, writer, &writer_id[i]);
+    }
     // Create reader threads
     for (int i = 0; i < NO_OF_READERS; i++) {
         reader_id[i] = i + 1;
         pthread_create(&readers[i], NULL, reader, &reader_id[i]);
     }
 
-    // Create writer threads
-    for (int i = 0; i < NO_OF_WRITERS; i++) {
-        writer_id[i] = i + 1;
-        pthread_create(&writers[i], NULL, writer, &writer_id[i]);
-    }
+    
 
     // Wait for all threads to complete
     for (int i = 0; i < NO_OF_READERS; i++) {

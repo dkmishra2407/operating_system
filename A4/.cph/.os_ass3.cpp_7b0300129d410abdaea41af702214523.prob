@@ -1,0 +1,1 @@
+{"name":"Local: os_ass3","url":"c:\\Users\\Admin\\Desktop\\operating_system\\A4\\os_ass3.cpp","tests":[{"id":1730895582240,"input":"5\n1 0 8\n2 1 4\n3 2 9\n4 3 5\n5 4 2","output":""}],"interactive":false,"memoryLimit":1024,"timeLimit":3000,"srcPath":"c:\\Users\\Admin\\Desktop\\operating_system\\A4\\os_ass3.cpp","group":"local","local":true}

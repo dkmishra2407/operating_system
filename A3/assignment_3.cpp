@@ -6,6 +6,7 @@ void swap(int *a, int *b) {
     *a = *b;
     *b = temp;
 }
+
 void non_premption(vector<vector<int>> &matrix) {
     int n = matrix.size();
 
