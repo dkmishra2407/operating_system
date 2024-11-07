@@ -74,37 +74,84 @@ public:
         vector<int> frame(frames, -1);
         int pageFaults = 0;
 
-        for (int i = 0; i < pages.size(); i++) {
+        // for (int i = 0; i < pages.size(); i++) {
+        //     bool found = false;
+        //     for (int j = 0; j < frames; j++) {
+        //         if (frame[j] == pages[i]) {
+        //             found = true; 
+        //             break;
+        //         }
+        //     }
+        //     if (!found) {
+        //         if (pageFaults < frames) {
+        //             frame[pageFaults++] = pages[i]; // Fill empty frames
+        //         } else {
+        //             // Replace page using optimal strategy
+        //             int farthest = -1, index = -1;
+        //             for (int j = 0; j < frames; j++) {
+        //                 int next = -1;
+        //                 for (int k = i + 1; k < pages.size(); k++) {
+        //                     if (frame[j] == pages[k]) {
+        //                         next = k;
+        //                         break;
+        //                     }
+        //                 }
+        //                 if (next == -1) {
+        //                     index = j; // Page not found in future, replace it
+        //                     break;
+        //                 }
+        //                 if (next > farthest) {
+        //                     farthest = next;
+        //                     index = j;
+        //                 }
+        //             }
+        //             frame[index] = pages[i];
+        //             pageFaults++;
+        //         }
+        //     }
+        //     printFrame(frame);
+        // }
+
+        for(int i=0;i<pages.size();i++){
+
             bool found = false;
-            for (int j = 0; j < frames; j++) {
-                if (frame[j] == pages[i]) {
-                    found = true; 
+
+            for(int j=0;j<frames;j++){
+                if(frame[j] == pages[i]){
+                    found = true;
                     break;
                 }
             }
-            if (!found) {
-                if (pageFaults < frames) {
-                    frame[pageFaults++] = pages[i]; // Fill empty frames
-                } else {
-                    // Replace page using optimal strategy
-                    int farthest = -1, index = -1;
-                    for (int j = 0; j < frames; j++) {
+
+            if(!found){
+                if(pageFaults < frames){
+                    frame[pageFaults++] = pages[i];
+                }
+                else{
+                    int index = -1;
+                    int fartherest = -1;
+
+                    for(int j=0;j<frames;j++){
                         int next = -1;
-                        for (int k = i + 1; k < pages.size(); k++) {
-                            if (frame[j] == pages[k]) {
+
+                        for(int k=i+1;k<pages.size();k++){
+                            if(frame[j] == pages[k]){
                                 next = k;
                                 break;
                             }
                         }
-                        if (next == -1) {
-                            index = j; // Page not found in future, replace it
+
+                        if(next == -1){
+                            index = j;
                             break;
                         }
-                        if (next > farthest) {
-                            farthest = next;
+
+                        if(next > fartherest){
                             index = j;
+                            fartherest = next;
                         }
                     }
+
                     frame[index] = pages[i];
                     pageFaults++;
                 }
@@ -117,7 +164,7 @@ public:
 private:
     void printFrame(const vector<int>& frame) {
         cout << "Frames: ";
-        for (int page : frame) {
+        for (int page : frame)  {
             if (page != -1) {
                 cout << page << " ";
             } else {
